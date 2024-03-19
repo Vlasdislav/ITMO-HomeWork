@@ -1,0 +1,110 @@
+== Задачи
+
+* пишите _хорошие_ инструкции в make
+
+=== #1 string_utils
+
+* нельзя использовать `<cstring>` (!)
+* Реализуйте `myStrCmp` — точно такую же, как `strcmp` в `<cstring>`
+
+[source,cpp]
+----
+int myStrCmp(const char* s1, const char* s2);
+----
+
+ifdef::backend-revealjs[=== !]
+
+* Реализуйте `findNearestSame`
+
+[source,cpp]
+----
+ptrdiff_t findNearestSame(const char* s, const char* c);
+----
+
+** `s` — си-строка
+** `c` — указатель на символ внутри нее (не `\0`)
+** найдите сдвиг от `c` до ближайшего такого же символа в строке
+*** если нет такого же — верните `0`
+*** если ближайших несколько — верните положительный сдвиг
+
+
+=== #2 array_utils
+
+_Инты -- это `int`, для описания количества используйте `size_t`_
+
+_Под массивом подразумевается прием по указателю_
+
+ifdef::backend-revealjs[=== !]
+
+Реализуйте:
+
+* `sum` - принимает массив интов и количество элементов в массиве; возвращает их сумму
+* `countNumbers` - принимает массив интов в диапазоне [0, 9] и количество элементов в массиве; возвращает
+количество уникальных чисел в массиве
+* `popZeros` — принимает массив указателей на инты, и перемещает значения-нули в конец
+
+ifdef::backend-revealjs[=== !]
+
+[source,cpp]
+----
+using const_int_pointer_t = const int*;
+
+void popZeros(const_int_pointer_t *a, size_t size);
+
+int i = 2, j = 0, k = -2;
+----
+
+* на вход: `{&i, nullptr, &j, &k}`
+* в результате: `{&i, nullptr, &k, &j}`
+
+=== #3 C from C++
+* `sum.h`
+** объявить функцию `int sum(int, int)`
+* `sum.c`
+** определить функцию `int sum(int, int)`
+* `test.cpp`: подключить `sum.h`
+* написать достаточный таргет `smoke_task_3`
+
+ifdef::backend-revealjs[=== !]
+
+* компилировать необходимо соответствующими компиляторами в отдельные объектные файлы (`gcc`/`clang`/`cl` для комиляции `C`)
+* в `make` для сабмита решения — используйте `g++` + `gcc`
+* в задаче нужен https://en.cppreference.com/w/cpp/language/language_linkage#Explanation[`extern "C"`]
+* name mangling [*]
+
+== advanced
+
+=== Makefiles
+
+Декларативное описание целей и зависимостей:
+[source, make]
+----
+<target>: <dep1> <dep2> ...
+[tab] <command>
+
+main.o: main.cpp
+	g++ -c main.cpp
+
+hello.o: hello.cpp
+	g++ -c hello.cpp
+
+all: main.o hello.o
+	g++ main.o hello.o -o hello
+----
+
+ifdef::backend-revealjs[=== !]
+
+Улучшения:
+
+* `g++`, флаги компиляции оборачиваем в "константы"
+** => -копипаста
+* каждый таргет — артефакт на ФС
+** => применяется "кэширование": ленивая пересборка по mtime
+** чем гранулярнее — тем лучше
+** надо аккуратно писать зависимости (следить за полнотой)
+* запуски бинарей [здесь и далее в дорешках] — отдельно, вне makefile
+
+=== c-strings
+
+* representation: https://godbolt.org/z/P5xTGoE5c[godbolt]
+* data & encoding: https://stackoverflow.com/questions/402283/stdwstring-vs-stdstring[so answer]
