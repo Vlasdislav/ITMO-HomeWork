@@ -1,0 +1,105 @@
+== Задачи
+
+* 4 шт по 0.75 балла
+* также заполняем таргеты в Makefile
+
+== #1 concat
+
+Напишите функцию `concat`, которая принимает
+два участка памяти и аллоцирует новый, содержащий
+в себе данные обоих аргументов
+
+ifdef::backend-revealjs[=== !]
+
+[source, cpp]
+----
+char const* concat(
+    char const a[],
+    size_t a_size,
+    char const b[],
+    size_t b_size,
+    size_t& concat_size
+);
+----
+
+* смотрите тесты за примерами поведения
+** `a`, `b` — не(-обязательно) си-строки: размеры данных переданы отдельными аргументами
+
+=== #2 int_vector
+
+Реализуйте простой вектор интов (в одной структуре) и вспомогательные методы
+
+[source,cpp]
+----
+struct IntVector {
+    int    *data = nullptr;
+    size_t size = 0;
+    size_t capacity_ = 0;
+};
+
+void pushBack(IntVector& v, int value);
+void popBack(IntVector& v);
+void deallocate(IntVector& v);
+----
+
+ifdef::backend-revealjs[=== !]
+
+* `data` — динамический массив из `capacity_` элементов
+* Интефейсно: есть доступ к элементам `v.data[i]` при `i < v.size` (проверка выхода не нужна)
+
+ifdef::backend-revealjs[=== !]
+
+* `pushBack` — добавляет элемент в конец, выделяет новую память (*2, начинает с 1) при `size == capacity_`
+* `popBack` — удаляет последний элемент из массива
+* `deallocate` — очищает всю память `data_`, обнуляет размеры
+
+=== #3 list of nodes: revert + cleanup
+
+[source,cpp]
+----
+struct Node {
+    int value;
+    Node* next;
+};
+----
+
+* есть односвязный список из таких структур
+* реализуйте функцию, разворачивающую список (`revert`)
+* реализуйте функцию, подчищающую все элементы в переданном списке (`cleanup`)
+** предполагается, что все входящие в список ноды были выделены в динамический памяти
+и всех их можно подчистить за один вызов `cleanup`
+* в реализации нельзя использовать рекурсивные вызовы
+* напишите сигнатуры самостоятельно (возвращается void; для типа аргумента — см примеры запуска)
+
+ifdef::backend-revealjs[=== !]
+
+[source,cpp]
+----
+Node* head; // inited somehow:
+/* head == addr0 -> {42, addr1} -> {24, addr2} -> {-1, null} */
+
+revert(&head);
+/* head == addr2 -> {-1, addr1} -> {24, addr0} -> {42, null} */
+cleanup(head);
+----
+
+=== #4 singleton
+
+* `singleton.hpp`
+** объявление функции `int inc()`, инкрементирующей счетчик и возвращающий его значение (начиная с нуля)
+** в `singleton.cpp` — определение
+
+ifdef::backend-revealjs[=== !]
+* `first.cpp`
+** Определение функции `int inc_first()`, вызывающей `inc`
+* `second.cpp`
+** Определение функции `int inc_second()`, вызывающей `inc`
+
+ifdef::backend-revealjs[=== !]
+
+* Ожидание: `inc_first(), inc_second(), inc_first()` — вернут 0, 1, 2, ...
+** Требование к решению: не загрязняем глобальное пространство имен!
+
+== live-coding
+
+* topic: dynamic memory
